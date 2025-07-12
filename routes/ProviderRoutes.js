@@ -61,7 +61,21 @@ router.delete('/delete/:id', async (req, res) => {
   } 
 });
 
+router.post('/multi-by-id', async (req, res) => {
+  try {
+    const { ids } = req.body;
 
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: 'Please provide an array of provider IDs' });
+    }
+
+    const providers = await ServiceProvider.find({ _id: { $in: ids } });
+
+    res.json({ success: true, providers });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 
 
