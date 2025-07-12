@@ -1,0 +1,34 @@
+{
+  "name": "apna-network-backend",
+  "version": "1.0.0",
+  "description": "backend application for apna-network",
+  "homepage": "https://github.com/priyanshu6729/apna-network-backend#readme",
+  "bugs": {
+    "url": "https://github.com/priyanshu6729/apna-network-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/priyanshu6729/apna-network-backend.git"
+  },
+  "license": "ISC",
+  "author": "aniket,dheeraj",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "twilio": "^5.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
