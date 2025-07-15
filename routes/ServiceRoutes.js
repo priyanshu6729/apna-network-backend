@@ -1,13 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const Service = require('../models/Service');
+const Category = require('../models/Category');
 
 // CREATE a new service
 router.post('/create', async (req, res) => {
   try {
+    const { category } = req.body;
+
+    // Check if the category exists in the database
+    const validCategory = await Category.findOne({ key: category });
+
+    if (!validCategory) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid category '${category}'. Please use an allowed category.`
+      });
+    }
+
+    // Proceed to create the service
     const service = new Service(req.body);
     const savedService = await service.save();
+
     res.status(201).json({ success: true, data: savedService });
+
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }

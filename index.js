@@ -38,7 +38,8 @@ app.use("/api/reviews", require("./routes/ReviewsRoutes"));
 app.use("/api/activity", require("./routes/ActivityRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/stats", require("./routes/StatsRoutes"));
-app.use("/api/admin", require("./routes/AdminRoutes")); // <-- Teammate’s route
+app.use("/api/admin", require("./routes/AdminRoutes")); 
+app.use("/api/service-requests", require("./routes/ServiceRequestRoutes"));
 
 // Health check route
 app.get("/", (req, res) => {
