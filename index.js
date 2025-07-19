@@ -43,7 +43,7 @@ app.use("/api/service-requests", require("./routes/ServiceRequestRoutes"));
 
 // Health check route
 app.get("/", (req, res) => {
-  res.send("API is running on port 8000");
+  res.send(`API is running on port ${PORT}`);
 });
 
 // 404 handler
