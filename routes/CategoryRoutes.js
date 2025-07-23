@@ -2,6 +2,32 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category'); // Adjust the path as needed
 
+router.post('/bulk', async (req, res) => {
+  try {
+    const categories = req.body;
+
+    if (!Array.isArray(categories) || categories.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid input data" });
+    }
+
+    const result = await Category.insertMany(categories, { ordered: false }); // ignore duplicates if any
+
+    res.status(201).json({
+      success: true,
+      message: `${result.length} categories inserted successfully`,
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Bulk insert failed",
+      error: err.message,
+    });
+  }
+});
+
+
 // CREATE a new category
 router.post('/', async (req, res) => {
   try {
