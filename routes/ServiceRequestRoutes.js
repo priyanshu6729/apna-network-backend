@@ -30,13 +30,22 @@ router.get('/', async (req, res) => {
 router.get('/user/:user_id', async (req, res) => {
   try {
     const requests = await ServiceRequest.find({ user_id: req.params.user_id })
-      .populate('service_id')
-      .populate('provider_id');
+      .select('createdAt status provider_id service_id') 
+      .populate({
+        path: 'provider_id',
+        select: 'name' 
+      })
+      .populate({
+        path: 'service_id',
+        select: 'category' 
+      });
+
     res.json({ success: true, data: requests });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 
 // GET service requests by service ID
 router.get('/service/:service_id', async (req, res) => {
