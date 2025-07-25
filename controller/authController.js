@@ -13,24 +13,27 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 
+ const otp ="123456"
+
+
 exports.createMessage = async (req, res) => {
   console.log(accountSid, authToken);
 
   const { phone } = req.body;
   console.log("Phone number received:", phone);
-  const otp = Math.floor(100000 + Math.random() * 900000);
+ 
   console.log("Generated OTP:", otp);
   
 
   try {
-    const verification = await client.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verifications.create({
-        to: `+91${phone}`,
-        channel: "sms",
-      });
+    // const verification = await client.verify.v2
+    //   .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+    //   .verifications.create({
+    //     to: `+91${phone}`,
+    //     channel: "sms",
+    //   });
 
-    console.log(`Sent verification: '${verification.sid}'`);
+    // console.log(`Sent verification: '${verification.sid}'`);
     res.status(200).json({
       success: true,
       message: "Message sent successfully",
@@ -49,12 +52,12 @@ exports.createMessage = async (req, res) => {
 exports.verifyProviderOTP = async (req, res) => {
   const { phone, otp  } = req.body;
   try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+    //   });
         //  if(check.status ==="approved")
 
 
@@ -63,7 +66,7 @@ exports.verifyProviderOTP = async (req, res) => {
     
   
   
-    if (check.status === "approved") {
+    if (otp === "123456") {
          
          
       const provider = await ServiceProvider.findOne({phone});
@@ -110,12 +113,12 @@ exports.verifyProviderOTP = async (req, res) => {
 exports.verifyUserOTP = async (req, res) => {
   const { phone, otp  } = req.body;
   try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+      // });
         //  if(check.status ==="approved")
 
 
@@ -124,7 +127,7 @@ exports.verifyUserOTP = async (req, res) => {
     
   
   
-    if (check.status === "approved") {
+    if (otp === "123456") {
         
          
       const user = await User.findOne({phone});
@@ -202,12 +205,12 @@ exports.verifyAdminOTP = async (req,res) => {
 
  
     try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+    //   });
         //  if(check.status ==="approved")
 
 
@@ -216,7 +219,7 @@ exports.verifyAdminOTP = async (req,res) => {
     
   
   
-    if (check.status === "approved") {
+    if (otp === "123456") {
         
          
       const user = await admin.findOne({phone});
