@@ -70,13 +70,13 @@ exports.verifyProviderOTP = async (req, res) => {
 
 
       const provider = await ServiceProvider.findOne({ phone });
+      if (provider) {
       const token = jwt.sign(
         { id: provider._id, role: 'provider', name: provider.name, email: provider.email },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 
-      if (provider) {
         return res.status(200).json({
           success: true,
           message: "Login successful",
@@ -85,18 +85,24 @@ exports.verifyProviderOTP = async (req, res) => {
           provider,
         });
       }
-
-
-
+      
+      
+      
       return res.status(200).json({
         success: true,
         newUser: true,
         message: "OTP verified. Please complete signup.",
         phone: `+91${phone}`,
-        token
       });
     }
-
+    else{
+      return res.status(404).json({
+      success: false,
+      message: "Invalid OTP",
+      error: error.message,
+    });
+    }
+      
 
 
 
@@ -128,18 +134,18 @@ exports.verifyUserOTP = async (req, res) => {
 
 
 
-    if (otp === "123456") {
+    if (otp === "123456")   {
 
 
       const user = await User.findOne({ phone });
       // console.log("user form verify otp", user)
+      if (user) {
       const token = jwt.sign(
         { id: user._id, role: 'user', name: user.name, email: user.email, phone: user.phone },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
       // console.log("token from otp verify ", token)
-      if (user) {
         return res.status(200).json({
           success: true,
           message: "Login successful",
@@ -159,6 +165,14 @@ exports.verifyUserOTP = async (req, res) => {
           token
         });
       }
+    }
+
+    else{
+      return res.status(404).json({
+      success: false,
+      message: "Invalid OTP",
+      error: error.message,
+    });
     }
 
 
@@ -258,7 +272,7 @@ exports.verifyAdminOTP = async (req, res) => {
     else {
       return res.status(400).json({
         success: false,
-        message: "OTP verification failed",
+        message: "Invalid otp",
       });
     }
 
