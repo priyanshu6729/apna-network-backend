@@ -41,7 +41,7 @@ app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/stats", require("./routes/StatsRoutes"));
 app.use("/api/admin", require("./routes/AdminRoutes")); 
 app.use("/api/service-requests", require("./routes/ServiceRequestRoutes"));
-
+app.use("/api/notify", require("./routes/Notify"))
 // Health check
 app.get("/", (req, res) => {
   res.send(`API is running on port ${PORT}`);

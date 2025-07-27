@@ -1,4 +1,4 @@
-const twilio = require("twilio"); 
+const twilio = require("twilio");
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const VERIFY_SERVICE_SID = process.env.TWILIO_VERIFY_SERVICE_SID;
@@ -13,24 +13,27 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 
+const otp = "123456"
+
+
 exports.createMessage = async (req, res) => {
-  console.log(accountSid, authToken);
+  // console.log(accountSid, authToken);
 
   const { phone } = req.body;
   console.log("Phone number received:", phone);
-  const otp = Math.floor(100000 + Math.random() * 900000);
+
   console.log("Generated OTP:", otp);
-  
+
 
   try {
-    const verification = await client.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verifications.create({
-        to: `+91${phone}`,
-        channel: "sms",
-      });
+    // const verification = await client.verify.v2
+    //   .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+    //   .verifications.create({
+    //     to: `+91${phone}`,
+    //     channel: "sms",
+    //   });
 
-    console.log(`Sent verification: '${verification.sid}'`);
+    // console.log(`Sent verification: '${verification.sid}'`);
     res.status(200).json({
       success: true,
       message: "Message sent successfully",
@@ -47,33 +50,33 @@ exports.createMessage = async (req, res) => {
 
 
 exports.verifyProviderOTP = async (req, res) => {
-  const { phone, otp  } = req.body;
+  const { phone, otp } = req.body;
   try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
-        //  if(check.status ==="approved")
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+    //   });
+    //  if(check.status ==="approved")
 
 
-        //   res.status(200).json({
-        //     success: true,  })
-    
-  
-  
-    if (check.status === "approved") {
-         
-         
-      const provider = await ServiceProvider.findOne({phone});
-      if (provider){
-        const token = jwt.sign(
-          { id: provider._id, role: provider.role },
-          process.env.JWT_SECRET,
-          { expiresIn: "7d" }
-        );
+    //   res.status(200).json({
+    //     success: true,  })
 
+
+
+    if (otp === "123456") {
+
+
+      const provider = await ServiceProvider.findOne({ phone });
+      const token = jwt.sign(
+        { id: provider._id, role: 'provider', name: provider.name, email: provider.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      if (provider) {
         return res.status(200).json({
           success: true,
           message: "Login successful",
@@ -83,20 +86,21 @@ exports.verifyProviderOTP = async (req, res) => {
         });
       }
 
-      
-      
+
+
       return res.status(200).json({
         success: true,
         newUser: true,
         message: "OTP verified. Please complete signup.",
         phone: `+91${phone}`,
-    });
+        token
+      });
     }
-    
-    
-    
-      
-    
+
+
+
+
+
   } catch (error) {
     console.error("Error verifying OTP:", error);
     return res.status(500).json({
@@ -108,33 +112,34 @@ exports.verifyProviderOTP = async (req, res) => {
 };
 
 exports.verifyUserOTP = async (req, res) => {
-  const { phone, otp  } = req.body;
+  const { phone, otp } = req.body;
   try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
-        //  if(check.status ==="approved")
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+    // });
+    //  if(check.status ==="approved")
 
 
-        //   res.status(200).json({
-        //     success: true,  })
-    
-  
-  
-    if (check.status === "approved") {
-        
-         
-      const user = await User.findOne({phone});
-      if (user){
-        const token = jwt.sign(
-          { id: user._id, role: user.role },
-          process.env.JWT_SECRET,
-          { expiresIn: "7d" }
-        );
+    //   res.status(200).json({
+    //     success: true,  })
 
+
+
+    if (otp === "123456") {
+
+
+      const user = await User.findOne({ phone });
+      // console.log("user form verify otp", user)
+      const token = jwt.sign(
+        { id: user._id, role: 'user', name: user.name, email: user.email, phone: user.phone },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+      // console.log("token from otp verify ", token)
+      if (user) {
         return res.status(200).json({
           success: true,
           message: "Login successful",
@@ -144,20 +149,21 @@ exports.verifyUserOTP = async (req, res) => {
         });
       }
 
-      
-      else{
-      return res.status(200).json({
-        success: true,
-        newUser: true,
-        message: "OTP verified. Please complete signup.",
-        phone: `+91${phone}`,
-      });
+
+      else {
+        return res.status(200).json({
+          success: true,
+          newUser: true,
+          message: "OTP verified. Please complete signup.",
+          phone: `+91${phone}`,
+          token
+        });
+      }
     }
-    }
-    
-    
-      
-    
+
+
+
+
   } catch (error) {
     console.error("Error verifying OTP:", error);
     return res.status(500).json({
@@ -168,12 +174,12 @@ exports.verifyUserOTP = async (req, res) => {
   }
 };
 
-exports.aboutProvider = async (req,res)=>{
+exports.aboutProvider = async (req, res) => {
 
 
-   try {
+  try {
     const provider = await ServiceProvider.findById(req.user.id).select('-password');
-    
+
     if (!provider) {
       return res.status(404).json({ success: false, message: 'Provider not found' });
     }
@@ -190,39 +196,34 @@ exports.aboutProvider = async (req,res)=>{
 
 }
 
-
-
- 
-
-
-exports.verifyAdminOTP = async (req,res) => {
-  const { phone, password ,otp   } = req.body;
+exports.verifyAdminOTP = async (req, res) => {
+  const { phone, password, otp } = req.body;
   const Admin = await admin.findOne({ phone });
   // const isMatch =  bcrypt.compare(password, Admin.password);
 
- 
-    try {
-    const check = await client.verify.v2
-      .services(VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+91${phone}`,
-        code: otp,
-      });
-        //  if(check.status ==="approved")
+
+  try {
+    // const check = await client.verify.v2
+    //   .services(VERIFY_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+91${phone}`,
+    //     code: otp,
+    //   });
+    //  if(check.status ==="approved")
 
 
-        //   res.status(200).json({
-        //     success: true,  })
-    
-  
-  
-    if (check.status === "approved") {
-        
-         
-      const user = await admin.findOne({phone});
-      if (user){
+    //   res.status(200).json({
+    //     success: true,  })
+
+
+
+    if (otp === "123456") {
+
+
+      const user = await admin.findOne({ phone });
+      if (user) {
         const token = jwt.sign(
-          { id: user._id },
+          { id: user._id, name: user.name, email: user.email, phone: user.phone },
           process.env.JWT_SECRET,
           { expiresIn: "7d" }
         );
@@ -232,39 +233,39 @@ exports.verifyAdminOTP = async (req,res) => {
           message: "Login successful",
           token,
           admin: {
-             _id: user._id,
-             name: user.name,
-             phone: user.phone,
-  }
+            _id: user._id,
+            name: user.name,
+            phone: user.phone,
+          }
         });
       }
 
-      
+
       else {
-      return res.status(200).json({
-        success: true,
-        newUser: true,
-        message: "OTP verified",
-        phone: `+91${phone}`,
+        return res.status(200).json({
+          success: true,
+          newUser: true,
+          message: "OTP verified",
+          phone: `+91${phone}`,
+        });
+      }
+
+
+
+
+
+    }
+    else {
+      return res.status(400).json({
+        success: false,
+        message: "OTP verification failed",
       });
-    } 
-    
+    }
 
-    
 
-    
-  }
-  else{
-    return res.status(400).json({
-      success: false,
-      message: "OTP verification failed",
-    });
-  }
-    
-    
-     
-  
-    
+
+
+
   } catch (error) {
     console.error("Error verifying OTP:", error);
     return res.status(500).json({
@@ -279,14 +280,14 @@ exports.verifyAdminOTP = async (req,res) => {
 
 
 
-  
+
 
 
 
 exports.completeProviderSignup = async (req, res) => {
-  const { phone, name, role,adhaar, fatherName, village, email,dob,location,skills,experience,availability} = req.body;
- 
-  
+  const { phone, name, role, aadhar, fatherName, village, email, dob, location, availability } = req.body;
+
+
   try {
     const existing = await ServiceProvider.findOne({ phone: `${phone}` });
     console.log("Existing user:", existing);
@@ -294,15 +295,15 @@ exports.completeProviderSignup = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser= new  ServiceProvider({phone, name, role,dob, adhaar, fatherName,village,email,location,skills,experience,availability});
+    const newUser = new ServiceProvider({ phone, name, role, dob, aadhar, fatherName, village, email, location, availability });
     await newUser.save();
 
 
     // Generate JWT token for the new user
-     
+
 
     const token = jwt.sign(
-      { id: newUser._id, role: newUser.role },
+      { id: newUser._id, role: role, name, email, phone },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -322,9 +323,9 @@ exports.completeProviderSignup = async (req, res) => {
 };
 
 exports.completeUserSignup = async (req, res) => {
-  const { phone, name, role,gender,address,location} = req.body;
-  console.log( { phone, name, role, gender, address, location} );
-  
+  const { phone, name, role, gender, address, location, email } = req.body;
+  console.log({ phone, name, role, gender, address, location, email });
+
   try {
     const existing = await User.findOne({ phone: `${phone}` });
     console.log("Existing user:", existing);
@@ -332,18 +333,18 @@ exports.completeUserSignup = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = new User({ 
-      phone, 
-      name, 
-      role, 
-      gender, 
+    const newUser = new User({
+      phone,
+      name,
+      gender,
       address,
-      location 
+      location,
+      email
     });
     await newUser.save();
 
     const token = jwt.sign(
-      { id: newUser._id, role: newUser.role },
+      { id: newUser._id, role: role, name, email, phone },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );

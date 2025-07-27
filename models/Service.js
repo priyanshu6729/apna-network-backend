@@ -6,15 +6,8 @@ const serviceSchema = new mongoose.Schema({
   category: String,
   description: String,
   tags: [String],
-  experience_level: String,
+  experience_level: Number,
   contact: String,
-  images: [String],
-  active: { type: Boolean, default: true },
-  status: {
-    type: String,
-    enum: ['pending', 'approved', 'rejected'],
-    default: 'pending'
-  }
 }, {
   timestamps: true 
 });
