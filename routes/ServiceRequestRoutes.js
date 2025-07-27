@@ -5,13 +5,30 @@ const router = express.Router();
 // CREATE a service request
 router.post('/', async (req, res) => {
   try {
+    const { user_id, provider_id, service_id } = req.body;
+
+    // Check if the request already exists
+    const existingRequest = await ServiceRequest.findOne({ user_id, provider_id, service_id });
+
+    if (existingRequest) {
+      return res.status(200).json({
+        success: true,
+        message: 'You have already sent the request',
+        data: existingRequest,
+      });
+    }
+
+    // If not, create a new one
     const request = new ServiceRequest(req.body);
     const savedRequest = await request.save();
+
     res.status(201).json({ success: true, data: savedRequest });
+
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
 });
+
 
 // GET all service requests
 router.get('/', async (req, res) => {
@@ -125,5 +142,22 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+//delete all 
+// router.delete('/delete-all', async (req, res) => {
+//   try {
+//     const result = await ServiceRequest.deleteMany({});
+//     res.status(200).json({
+//       success: true,
+//       message: `Deleted ${result.deletedCount} service request(s).`,
+//     });
+//   } catch (err) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to delete service requests.',
+//       error: err.message,
+//     });
+//   }
+// });
 
 module.exports = router;
