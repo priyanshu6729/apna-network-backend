@@ -29,6 +29,57 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// CREATE in bulk 
+router.post('/create-batch', async (req, res) => {
+  try {
+    const services = req.body;
+
+    if (!Array.isArray(services) || services.length === 0) {
+      return res.status(400).json({ success: false, message: 'Request body must be a non-empty array of services' });
+    }
+
+    const errors = [];
+    const validServices = [];
+
+    for (const [index, service] of services.entries()) {
+      const { category } = service;
+
+      const validCategory = await Category.findOne({ key: category });
+      if (!validCategory) {
+        errors.push({
+          index,
+          category,
+          message: `Invalid category '${category}' at index ${index}`
+        });
+        continue;
+      }
+
+      validServices.push(new Service(service));
+    }
+
+    // If no valid entries, return errors
+    if (validServices.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'All services failed validation',
+        errors
+      });
+    }
+
+    const savedServices = await Service.insertMany(validServices);
+
+    res.status(201).json({
+      success: true,
+      data: savedServices,
+      errors: errors.length > 0 ? errors : undefined
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 // READ all services (with optional status filter)
 router.get('/', async (req, res) => {
   try {
@@ -120,6 +171,21 @@ router.patch('/reject/:id', async (req, res) => {
     res.json({ success: true, data: rejectedService });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE all services
+router.delete('/delete-all-services', async (req, res) => {
+  try {
+    const result = await Service.deleteMany({});
+    res.status(200).json({
+      success: true,
+      message: 'All services deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Error deleting services:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
