@@ -162,7 +162,6 @@ exports.verifyUserOTP = async (req, res) => {
           newUser: true,
           message: "OTP verified. Please complete signup.",
           phone: `+91${phone}`,
-          token
         });
       }
     }
