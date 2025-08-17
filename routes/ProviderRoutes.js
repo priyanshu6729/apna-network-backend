@@ -25,15 +25,15 @@ router.get('/', async (req, res) => {
 });
 
 // READ single ServiceProvider by ID
-// router.get('/:id', async (req, res) => {
-//   try {
-//     const provider = await ServiceProvider.findById(req.params.id);
-//     if (!provider) return res.status(404).json({ message: 'ServiceProvider not found' });
-//     res.json({success:true, provider});
-//   } catch (err) {
-//     res.status(500).json({ success:false, message: err.message });
-//   }
-// });
+router.get('/:id', async (req, res) => {
+  try {
+    const provider = await ServiceProvider.findById(req.params.id);
+    if (!provider) return res.status(404).json({ message: 'ServiceProvider not found' });
+    res.json({success:true, provider});
+  } catch (err) {
+    res.status(500).json({ success:false, message: err.message });
+  }
+});
 
 // UPDATE a ServiceProvider by ID
 router.put('/update/:id', async (req, res) => {
