@@ -37,3 +37,31 @@ exports.verifyProviderToken = async (req, res, next) => {
     return res.status(401).json({ message: 'Invalid token (provider)' });
   }
 };
+
+
+const Admin = require('../models/Admin'); // your admin model
+
+exports.verifyAdminToken = async (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  
+  if (!token) return res.status(401).json({ message: 'No token provided (admin)' });
+
+  try {
+   
+     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied: Admins only' });
+    }
+   
+
+    const admin = await Admin.findById(decoded.id).select('-password');
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+    req.admin = admin;
+    next();
+  } catch (err) {
+    console.error('Admin token error:', err);
+    return res.status(401).json({ message: 'Invalid token (admin)' });
+  }
+};

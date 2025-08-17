@@ -13,7 +13,7 @@ exports.createActivity = async (req, res) => {
 };
 
 
-exports.getAllActivities = async (req, res) => {
+exports.getAllActivities = async (req , res) => {
   try {
     const activities = await ActivityLog.find().sort({ createdAt: -1 });
     res.json(activities);

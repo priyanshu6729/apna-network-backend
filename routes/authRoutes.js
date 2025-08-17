@@ -1,6 +1,6 @@
 const exprss= require('express');
 const router = exprss.Router();
-const protect = require('../middleware/authMiddleware');
+const verifyAdminToken = require('../middleware/authMiddleware');
 const { verifyOTP, createMessage, completeSignup } = require('../controller/authController');
 
 
@@ -11,7 +11,7 @@ router.post('/complete',completeSignup)
 
 
 
-router.get('/dashboard', protect, (req, res) => {
+router.get('/dashboard', verifyAdminToken, (req, res) => {
   res.json({ success: true, message: `Welcome, user ${req.user.id} with role ${req.user.role}` });
 });
 
