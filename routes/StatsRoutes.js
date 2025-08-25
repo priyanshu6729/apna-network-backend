@@ -9,8 +9,9 @@ const Review = require('../models/Reviews');
 const SuccessStory = require('../models/SuccessStory');
 const Blog = require('../models/Blog');
 const Newsletter = require('../models/Newsletter');
+const { verifyAdminToken } = require('../middleware/authMiddleware');
 
-router.get('/', async (req, res) => {
+router.get('/',verifyAdminToken, async (req, res) => {
   try {
     const [
       totalUsers,
