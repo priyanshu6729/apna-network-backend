@@ -8,12 +8,17 @@ router.post('/', async (req, res) => {
     const { user_id, provider_id, service_id } = req.body;
 
     // Check if the request already exists
-    const existingRequest = await ServiceRequest.findOne({ user_id, provider_id, service_id });
+    const existingRequest = await ServiceRequest.findOne({
+       user_id, 
+       provider_id, 
+       service_id,
+       status: 'requested'
+    });
 
     if (existingRequest) {
       return res.status(200).json({
         success: true,
-        message: 'You have already sent the request',
+        message: 'You already have a pending request for this service. Please wait for the provider to respond.',
         data: existingRequest,
       });
     }
