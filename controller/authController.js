@@ -145,7 +145,7 @@ exports.verifyUserOTP = async (req, res) => {
       const user = await User.findOne({phone});
       if (user){
         const token = jwt.sign(
-          { id: user._id, role:"user"  , name: user.name},
+          { id: user._id, role:"user"  , name: user.name, phone:phone},
           process.env.JWT_SECRET,
           { expiresIn: "7d" }
         );
@@ -249,7 +249,7 @@ exports.verifyAdminOTP = async (req, res) => {
       if (user) {
         const token = jwt.sign(
 
-          { id: user._id  , role:"admin" , name: user.name},
+          { id: user._id  , role:"admin" , name: user.name, phone:phone},
 
 
           process.env.JWT_SECRET,
@@ -375,7 +375,7 @@ exports.completeUserSignup = async (req, res) => {
 
     const token = jwt.sign(
 
-      { id: newUser._id, role:"user" , name: newUser.name },
+      { id: newUser._id, role:"user" , name: newUser.name, phone:phone },
 
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
