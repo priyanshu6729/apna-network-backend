@@ -4,6 +4,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const VERIFY_SERVICE_SID = process.env.TWILIO_VERIFY_SERVICE_SID;
 const client = twilio(accountSid, authToken);
 const admin = require("../models/Admin");
+const ActivityLog = require("../models/ActivityLog");
 
 
 
@@ -99,7 +100,7 @@ exports.verifyProviderOTP = async (req, res) => {
       return res.status(404).json({
       success: false,
       message: "Invalid OTP",
-      error: error.message,
+      
     });
     }
       
@@ -311,7 +312,10 @@ exports.completeProviderSignup = async (req, res) => {
     const newUser = new ServiceProvider({ phone, name, role, dob, aadhar, fatherName, village, email, location, availability });
     await newUser.save();
 
-
+     await ActivityLog.create({
+      message: `New provider signed up: ${newUser.name} (${newUser.phone})`,
+      date: new Date(),
+    });
     // Generate JWT token for the new user
 
 
@@ -355,6 +359,11 @@ exports.completeUserSignup = async (req, res) => {
       email
     });
     await newUser.save();
+    
+    await ActivityLog.create({
+      message: `New user signed up: ${newUser.name} (${newUser.phone})`,
+      date: new Date(),
+    });
 
     const token = jwt.sign(
       { id: newUser._id, role: role, name, email, phone },
