@@ -225,10 +225,11 @@ exports.verifyAdminOTP = async (req,res) => {
       const user = await admin.findOne({phone});
       if (user){
         const token = jwt.sign(
-          { id: user._id  , role:"admin" , name: user.name},
+          { id: user._id  , role:"admin" , name: user.name , date: user.createdAt , phone: user.phone},
           process.env.JWT_SECRET,
           { expiresIn: "7d" }
         );
+        console.log('created at date:', user.createdAt);
 
         return res.status(200).json({
           success: true,
@@ -238,8 +239,10 @@ exports.verifyAdminOTP = async (req,res) => {
              _id: user._id,
              name: user.name,
              phone: user.phone,
+             date: user.createdAt
   }
         });
+        
       }
 
       

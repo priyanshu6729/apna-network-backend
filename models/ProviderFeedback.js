@@ -6,7 +6,7 @@ const providerFeedbackSchema = new mongoose.Schema({
     ref: 'ServiceProvider',
     required: true,
   },
-  rating: { type: Number, min: 1, max: 5, required: true },
+  rating:{ type: Number, min: 1, max: 5, required: true },
   feedbackText: { type: String },
   tags: [String],
   recommend: { type: Boolean },

@@ -14,7 +14,7 @@ connectDB();
 // Middleware
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT',"PATCH", 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
@@ -41,6 +41,7 @@ app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api/stats", require("./routes/StatsRoutes"));
 app.use("/api/admin", require("./routes/AdminRoutes")); 
 app.use("/api/service-requests", require("./routes/ServiceRequestRoutes"));
+app.use('/api/feedback',require('./routes/feedbackRoutes'))
 
 // Health check
 app.get("/", (req, res) => {
