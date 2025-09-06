@@ -71,7 +71,7 @@ router.post('/multi-by-id', async (req, res) => {
 
     const providers = await ServiceProvider.find({ _id: { $in: ids } });
 
-    res.json({ success: true, providers });
+    res.json({ success: true, data:providers });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
