@@ -11,6 +11,6 @@ const User = new mongoose.Schema({
   location: String,
   created_at: { type: Date, default: Date.now },
   last_login: Date,
-});
+});                                                     
 
-module.exports = mongoose.model('User', User);
+module.exports = mongoose.model('User', User);     
