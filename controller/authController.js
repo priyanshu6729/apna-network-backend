@@ -145,7 +145,7 @@ exports.verifyUserOTP = async (req, res) => {
       const user = await User.findOne({phone});
       if (user){
         const token = jwt.sign(
-          { id: user._id, role:"user"  , name: user.name, phone:phone},
+          { id: user._id, role:"user"  , name: user.name},
           process.env.JWT_SECRET,
           { expiresIn: "7d" }
         );
@@ -249,23 +249,29 @@ exports.verifyAdminOTP = async (req, res) => {
       if (user) {
         const token = jwt.sign(
 
-          { id: user._id  , role:"admin" , name: user.name, phone:phone},
+          { id: user._id  , role:"admin" , name: user.name , date: user.createdAt , phone: user.phone},
 
 
+    
           process.env.JWT_SECRET,
           { expiresIn: "7d" }
         );
+        console.log('created at date:', user.createdAt);
 
         return res.status(200).json({
           success: true,
           message: "Login successful",
           token,
           admin: {
-            _id: user._id,
-            name: user.name,
-            phone: user.phone,
-          }
+
+             _id: user._id,
+             name: user.name,
+             phone: user.phone,
+             date: user.createdAt
+  }
+
         });
+        
       }
 
 
@@ -375,7 +381,7 @@ exports.completeUserSignup = async (req, res) => {
 
     const token = jwt.sign(
 
-      { id: newUser._id, role:"user" , name: newUser.name, phone:phone },
+      { id: newUser._id, role:"user" , name: newUser.name },
 
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
