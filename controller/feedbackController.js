@@ -4,10 +4,10 @@ const ProviderFeedback = require('../models/ProviderFeedback');
 
 exports.submitUserFeedback = async (req, res) => {
   try {
-    const { rating, feedbackText, tags, recommend, anonymous } = req.body;
+    const { rating, feedbackText, tags, recommend, anonymous,id} = req.body;
 
     const feedback = new UserFeedback({
-      user: req.user.id,
+      user: id,
       rating,
       feedbackText,
       tags,
